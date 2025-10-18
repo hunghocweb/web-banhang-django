@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 import environ
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
@@ -91,12 +91,13 @@ DATABASES = {
     #     'PASSWORD': '',
     #     'HOST': 'localhost',
     # }
-    'default': dj_database_url.parse(
-        env('DATABASE_URL'),
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
-        ssl_require=True   # Render Postgres bắt SSL
+        ssl_require=True  # Render PostgreSQL yêu cầu SSL
     )
 }
+
 
 
 # Password validation
