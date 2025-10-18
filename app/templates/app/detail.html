@@ -1,0 +1,106 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block detail_page %}
+<section class="py-5">
+  <div class="container">
+    <div class="row gx-5">
+      <!-- Hình ảnh sản phẩm -->
+      <aside class="col-lg-6">
+        <div class="border rounded-4 mb-3 d-flex justify-content-center">
+          <img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" src="{{ product.ImageURL }}" alt="{{ product.name }}" />
+        </div>
+        <h5 class="text-uppercase text-center mt-4">Sản phẩm tương tự</h5>
+        <div class="d-flex justify-content-center mb-3 flex-wrap">
+          {% for product_image in products %}
+          <a class="border mx-1 rounded-2" href="{% url 'detail' %}?id={{ product_image.id }}">
+            <img width="60" height="60" class="rounded-2 shadow-sm" src="{{ product_image.ImageURL }}" alt="{{ product_image.name }}" />
+          </a>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <!-- Thông tin sản phẩm -->
+      <main class="col-lg-6">
+        <div class="ps-lg-3">
+          <h4 class="title text-dark text-wrap fw-bold">
+            {{ product.name }}
+          </h4>
+          <div class="mb-3">
+            <span class="h5 text-danger fw-bold">{{ product.price | floatformat:2 }}$</span>
+            <span class="text-muted"><del>{{ product.price_origin | floatformat:2 }}$</del></span>
+          </div>
+          <p class="text-muted">
+            {{ product.detail }}
+          </p>
+
+          <div class="row mb-4">
+            <dt class="col-3">Loại:</dt>
+            <dd class="col-9">
+              {% for product_type in product_category %}
+              <span class="badge bg-secondary me-1">{{ product_type }}</span>
+              {% endfor %}
+            </dd>
+          </div>
+
+          <!-- Số lượng và nút mua hàng -->
+          <div class="d-flex align-items-center mb-4">
+            <div class="input-group me-3" style="width: 120px;">
+              <button data-product="{{ product.id }}" data-action="remove" class="btn btn-outline-danger update-cart">-</button>
+              <input type="text" class="form-control text-center border-secondary border-start-0 border-end-0" value="{{ quantity }}" readonly />
+              <button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-success update-cart">+</button>
+            </div>
+            <a href="{% url 'checkout' %}" class="btn btn-warning me-2">Mua ngay</a>
+            <button data-product="{{ product.id }}" data-action="add" class="btn btn-primary update-cart">Thêm vào giỏ</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Đánh giá sản phẩm -->
+    <div class="row mt-5">
+      <div class="col-lg-8 mx-auto">
+        <h4 class="fw-bold">Đánh giá sản phẩm</h4>
+        <p class="text-muted">Đánh giá trung bình: {{ average_rating|default:0 }} sao</p>
+        {% if request.user.is_authenticated %}
+        <form method="POST" action="{% url 'rate_product' product.id %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="rating" class="form-label">Đánh giá:</label>
+            <select name="rating" id="rating" class="form-select">
+              <option value="1">1 Sao</option>
+              <option value="2">2 Sao</option>
+              <option value="3">3 Sao</option>
+              <option value="4">4 Sao</option>
+              <option value="5">5 Sao</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Nhận xét:</label>
+            <textarea name="comment" id="comment" rows="3" class="form-control"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">Gửi đánh giá</button>
+        </form>
+        {% else %}
+        <p>Bạn cần <a href="{% url 'login' %}" class="text-primary">đăng nhập</a> để đánh giá sản phẩm.</p>
+        {% endif %}
+        <br><br>
+        <ul class="list-group mb-4">
+          <p><strong>Phản hồi của khách hàng </strong>
+          {% for rating in ratings %}
+          <li class="list-group-item">
+            <strong>{{ rating.user.username }}</strong>: {{ rating.rating }} sao
+            <p class="text-muted">{{ rating.comment }}</p>
+            {% if rating.admin_response %}
+            <p><strong>Phản hồi từ Admin:</strong> {{ rating.admin_response }}</p>
+            {% endif %}
+          </li>
+          {% empty %}
+          <li class="list-group-item">Chưa có đánh giá nào.</li>
+          {% endfor %}
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock detail_page %}

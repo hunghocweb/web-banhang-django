@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Cửa hàng điện tử Huế{% endblock %}
+
+{% block introduce %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center bg-light rounded shadow p-4">
+        <div class="col-lg-6">
+            <h1 class="display-4 text-primary">Cửa hàng điện tử Huế</h1>
+            <p class="lead mt-3">
+                Nơi cung cấp các sản phẩm điện tử chính hãng hàng đầu tại Huế! 
+                Hãy khám phá những thiết bị công nghệ hiện đại phù hợp nhất để nâng tầm cuộc sống của bạn.
+            </p>
+            <ul class="list-unstyled">
+                <li><i class="bi bi-check-circle text-success"></i> Sản phẩm từ các thương hiệu hàng đầu: <strong>Apple, Samsung, Sony</strong></li>
+                <li><i class="bi bi-check-circle text-success"></i> Phong phú các dòng sản phẩm: Điện thoại, Laptop, TV, Phụ kiện</li>
+                <li><i class="bi bi-check-circle text-success"></i> Dịch vụ tư vấn tận tâm và chuyên nghiệp</li>
+                <li><i class="bi bi-check-circle text-success"></i> Chính sách bảo hành và đổi trả linh hoạt</li>
+            </ul>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg mt-3">Khám phá ngay</a>
+        </div>
+        <div class="col-lg-6 text-center">
+            <img src="{% static 'app/images/electronics_store.png' %}" class="img-fluid rounded shadow-lg" alt="Cửa hàng điện tử Huế">
+        </div>
+    </div>
+</div>
+{% endblock introduce %}

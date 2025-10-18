@@ -1,0 +1,228 @@
+{% load static %}
+{% load form_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
+    <link rel="icon" href="{% static 'app/images/logo.png' %}" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+      <h2 class="text-center">Sales Statistics</h2>
+      
+      <!-- Statistics Form -->
+      <form method="POST" class="mb-4" active="">
+          {% csrf_token %}
+          <div class="row">
+              <div class="col-md-3 form-group">
+                  <label>Start Date</label>
+                  <input type="date" name="date-start" class="form-control" 
+                        value="{{ start_date|date:'Y-m-d' }}">
+              </div>
+              <div class="col-md-3 form-group">
+                  <label>End Date</label>
+                  <input type="date" name="date-end" class="form-control" 
+                        value="{{ end_date|date:'Y-m-d' }}">
+              </div>
+              <div class="col-md-3 form-group">
+                  <label>Statistics Type</label>
+                  <select name="statistic-type" class="form-control">
+                      <option value="day" {% if group_by == 'day' %}selected{% endif %}>Daily</option>
+                      <option value="week" {% if group_by == 'week' %}selected{% endif %}>Weekly</option>
+                      <option value="month" {% if group_by == 'month' %}selected{% endif %}>Monthly</option>
+                      <option value="year" {% if group_by == 'year' %}selected{% endif %}>Yearly</option>
+                  </select>
+              </div>
+              <div class="col-md-3 form-group align-self-end">
+                  <button type="submit" class="btn btn-primary">Update Statistics</button>
+              </div>
+          </div>
+      </form>
+
+      <!-- Statistics Table -->
+      <table class="table table-striped text-center">
+          <thead>
+              <tr>
+                  <th>{{ group_by|capfirst }}</th>
+                  <th>Total Quantity Sold</th>
+                  <th>Total Revenue</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for stat in statistics %}
+              <tr>
+                  <td>
+                      {% if group_by == 'day' %}
+                          {{ stat.date_str}}
+                      {% elif group_by == 'week' %}
+                          {{ stat.week_str}}
+                      {% elif group_by == 'month' %}
+                          {{ stat.month_str}}
+                      {% else %}
+                          {{ stat.year_str}}
+                      {% endif %}
+                  </td>
+                  <td>{{ stat.total_quantity }}</td>
+                  <td>{{ stat.total_revenue|floatformat:2 }}$</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+
+      <!-- Optional: Chart Visualization (requires Chart.js) -->
+      <div class="d-flex justify-content-center">
+        <div class="chart-container col-md-8">
+            <canvas id="statisticsChart"></canvas>
+        </div>
+      </div>
+  <br><br>
+  <hr>
+  <br><br>
+  <!-- Best Selling Products -->
+  <h2 class="text-center">Best Selling Products</h2>
+
+  <!-- Best Selling Table -->
+  <table class="table table-striped text-center">
+      <thead>
+          <tr>
+              <th>Product</th>
+              <th>Quantity Sold</th>
+              <th>Percentage (%)</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for item in bestSellings %}
+          <tr>
+              <td>{{ item.product__name }}</td>
+              <td>{{ item.total_quantity }}</td>
+              <td>{{ item.percent_quantity|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+  <!-- Best Selling Chart -->
+  <div class="d-flex justify-content-center">
+    <div class="chart-container col-md-6">
+        <canvas id="bestSellingChart"></canvas>
+    </div>
+  </div>
+</div>
+
+  <!-- Add Chart.js for visualization -->
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    {% comment %}--------------------------statistic sales--------------------------{% endcomment %}
+
+    const statistics = {{ statistics|safe }};
+    console.log(statistics);
+    const quantities = statistics.map(stat => stat.total_quantity);
+    const revenues = statistics.map(stat => stat.total_revenue);
+
+    const labels = statistics.map(stat => 
+        '{{group_by}}' === 'day' ? stat.date_str :
+        '{{group_by}}' === 'week' ? stat.week_str :
+        '{{group_by}}' === 'month' ? stat.month_str :
+        stat.year_str
+    );
+    console.log(quantities);
+    console.log(labels);
+    const color_quantities = generateColors(1);
+    const color_revenues = generateColors(1);
+    const chartType = Math.random() > 0.5 ? 'line' : 'bar';
+    new Chart(document.getElementById('statisticsChart'), {
+    type: chartType,
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Số lượng',
+                data: quantities,
+                backgroundColor: color_quantities,
+                borderColor: color_quantities
+            },
+            {
+                label: 'Tổng thu nhập',
+                data: revenues,
+                backgroundColor: color_revenues,
+                borderColor:  color_revenues
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+
+    });
+
+    {% comment %}------------------------statistic bestselling----------------------{% endcomment %}
+
+    const bestSellings = {{ bestSellings|safe }};
+    const productLabels = bestSellings.map(item => item.product__name);
+    const productQuantities = bestSellings.map(item => item.percent_quantity);
+
+    // Tính phần trăm "sản phẩm bán không chạy"
+    const totalSold = productQuantities.reduce((acc, quantity) => acc + quantity, 0);
+    const unsoldPercentage = 100 - totalSold;
+
+    // Thêm "sản phẩm không bán chạy" vào dữ liệu
+    productLabels.push('Sản phẩm không bán chạy');
+    productQuantities.push(unsoldPercentage);
+    // Tạo danh sách màu sắc động
+    const colors = generateColors(productLabels.length);
+    const chartPercentType = ['doughnut', 'pie', 'polarArea'][Math.floor(Math.random() * 3)];
+    new Chart(document.getElementById('bestSellingChart'), {
+        type: chartPercentType,
+        data: {
+            labels: productLabels,
+            datasets: [{
+                label: 'Best Selling Products',
+                data: productQuantities,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+    function generateColors(count) {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+          const r = Math.floor(Math.random() * 255);
+          const g = Math.floor(Math.random() * 255);
+          const b = Math.floor(Math.random() * 255);
+          colors.push(`rgba(${r}, ${g}, ${b}, 0.6)`);
+        }
+        return colors;
+    }
+  });
+  </script>
+
+  <!-- jQuery -->
+  <script src="{% static 'app/js/jquery.min.js' %}"></script>
+  <!-- Popper.js -->
+  <script src="{% static 'app/js/popper.min.js' %}"></script>
+  <!-- Bootstrap JS -->
+  <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
+
+</body>
+</html>

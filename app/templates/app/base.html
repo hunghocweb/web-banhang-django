@@ -1,0 +1,179 @@
+{% load static %}
+{% load form_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'app/css/bootstrap.min.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
+    <link rel="icon" href="{% static 'app/images/logo.png' %}" type="image/x-icon">
+    <!-- jQuery -->
+    <script src="{% static 'app/js/jquery.min.js' %}"></script>
+    <script type="text/javascript">
+      var user = '{{request.user}}'
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    </script>
+
+    <title>Web ban hang dien tu online</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  </head>
+
+  <body>
+    <!-- header -->
+    <nav class="navbar navbar-expand-lg rounded fixed-top shadow bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <img src="{% static 'app/images/logo.png' %}" width="50" height="50">
+        </a>
+        <ul class="navbar-nav navbar-toggler border-0 siz" >
+          <li class="nav-item flex">
+            <a class="nav-link cart-container" href="{% url 'cart' %}">
+              <img id="cart-icon" class="rounded border border-dark" src="{% static "app/images/cart_icon.png" %}">
+              <div id="number-item" class="rounded-circle">{{cartItems}}</div>
+            </a>
+          </li>
+        </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link hover_item" aria-current="page" href="{% url 'home' %}">Trang chủ</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link hover_item" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sản phẩm <span>&#9660;</span>
+              </a>
+              <ul class="dropdown-menu">
+                {% for item in categories %}
+                  <li><a class="nav-link hover_item" href="{% url 'category' %}?category={{item.slug}}">{{item.name}}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link hover_item" href="{% url 'introduce' %}">Giới thiệu</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link hover_item" href="{% url 'contact' %}">Liên hệ</a>
+            </li>
+          </ul>
+          {% comment %} search + filter {% endcomment %}
+          <form class="final-form d-flex align-items-center p-3" role="search" method="POST" action="{% url 'search' %}">
+            {% csrf_token %}
+            <!-- Search Input -->
+            <div class="input-group me-3" style="max-width: 200px;">
+                <input 
+                    class="form-control final-input" 
+                    type="search" 
+                    placeholder="Tìm kiếm sản phẩm..." 
+                    aria-label="Search" 
+                    name="searched" 
+                    value="{{ searched }}">
+            </div>
+        
+            <!-- Filter Dropdown -->
+            <div class="d-flex align-items-center me-3">
+                <label for="filter_price" class="me-2 final-label">Giá</label>
+                <select 
+                    id="filter_price" 
+                    name="filter_price" 
+                    class="form-select final-select">
+                    <option value="default" {% if group_price == 0 %}selected{% endif %}>All</option>
+                    <option value="less_50" {% if group_price == 50 %}selected{% endif %}>Dưới 50$</option>
+                    <option value="less_100" {% if group_price == 100 %}selected{% endif %}>Dưới 100$</option>
+                    <option value="less_150" {% if group_price == 150 %}selected{% endif %}>Dưới 150$</option>
+                    <option value="less_200" {% if group_price == 200 %}selected{% endif %}>Dưới 200$</option>
+                </select>
+            </div>
+        
+            <!-- Submit Button -->
+            <button class="btn final-button" type="submit">
+                TÌM KIẾM
+            </button>
+          </form>
+          
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% if request.user.is_anonymous%}
+              <li class="nav-item">
+                <a class="nav-link hover_item" href="{% url 'login' %}">Đăng nhập</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hover_item" href="{% url 'register' %}">Đăng kí</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hover_item" href="{% url 'manage' %}">Quản lí</a>
+              </li>
+            {% else %}
+              <li class="nav-item d-inline-flex flex-row" >
+                <p class="p-2 my-0">{{request.user}}</p>
+                <a class="hover_item nav-link m-0" href="{% url 'logout' %}">ĐĂNG XUẤT</a>
+              </li>
+            {% endif %}
+            <li class="nav-item flex">
+              <a class="nav-link cart-container" href="{% url 'cart' %}">
+                <img id="cart-icon" class="rounded border border-dark" src="{% static "app/images/cart_icon.png" %}">
+                <div id="number-item" class="rounded-circle">{{cartItems}}</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- main body -->
+    <br><br><br>
+    <!--home page-->
+    {% block banner_slider %}{% endblock banner_slider %}
+    {% block main_content %}{% endblock main_content %}
+    {% block ai_assistant %}{% endblock ai_assistant %}
+    <!--cart page-->
+    {% block cart_content %}{% endblock cart_content %}
+    <!--content checkout-->
+    {% block content_checkout %}{% endblock content_checkout %}
+    <!--register-->
+    {% block register %}{% endblock register %}
+    <!--login-->
+    {% block login_page %}{% endblock login_page %}
+    <!--search-->
+    {% block search %}{% endblock search %}
+    <!--category-->
+    {% block category %}{% endblock category %}
+    <!--detail page-->
+    {% block detail_page %}{% endblock detail_page %}
+    {% block introduce %}{% endblock introduce %}
+    {% block contact %}{% endblock contact %}
+    <br><br><br>
+    <!-- footer -->
+    <footer class="text-center text-bg-dark p-3 fixed-bottom">
+      copyright 2024
+    </footer>
+     <!-- Popper.js -->
+     <script src="{% static 'app/js/popper.min.js' %}"></script>
+     <!-- Bootstrap JS -->
+     <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
+     <!-- Custom JS -->
+     <script src="{% static 'app/js/cart.js' %}"></script>
+     <script src="{% static 'app/js/ai_assistance.js' %}"></script>
+  </body>
+</html>

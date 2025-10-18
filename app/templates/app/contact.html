@@ -1,0 +1,43 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Liên hệ - Cửa hàng bán hàng điện tử{% endblock %}
+
+{% block contact %}
+<div class="container my-5">
+    <h1 class="text-center text-primary mb-4"><strong>Liên hệ với chúng tôi</strong></h1>
+    <div class="col-lg-8 m-auto">
+      <img src="{% static 'app/images/image_store.png' %}" class="img-fluid rounded shadow-lg" alt="ảnh cửa hàng">
+    </div>
+    <br><br><br>
+    <!-- Contact Information -->
+    <div class="row justify-content-center">
+        <!-- Contact Details -->
+        <div class="col-md-4 mb-4">
+            <h3 class="text-center">Thông tin liên hệ</h3>
+            <p>
+                <strong><u>Địa chỉ:</u></strong> Hải cát, Hương Thọ, Thành phố huế<br>
+                <strong><u>Điện thoại:</u></strong> 0364642709 <br>
+                <strong><u>Email:</u></strong> <a href="mailto:vanhungnguyen7179@gmail.com">vanhungnguyen7179@gmail.com</a>
+            </p>
+        </div>
+        <!-- Working Hours -->
+        <div class="col-md-4 mb-4  text-center">
+            <h3>Giờ làm việc</h3>
+            <ul class="list-unstyled">
+                <li><strong>Thứ 2 - Thứ 6:</strong> 8:00 - 20:00</li>
+                <li><strong>Thứ 7, Chủ nhật:</strong> 9:00 - 18:00</li>
+            </ul>
+        </div>
+        <!-- Social Media -->
+        <div class="col-md-4 mb-4  text-center">
+            <h3>Kết nối với chúng tôi</h3>
+            <div>
+                <a href="https://www.facebook.com/" class="btn btn-outline-primary btn-sm me-2"><i class="bi bi-facebook"></i> Facebook</a>
+                <a href="https://www.instagram.com/" class="btn btn-outline-primary btn-sm me-2"><i class="bi bi-instagram"></i> Instagram</a>
+                <a href="https://x.com/" class="btn btn-outline-primary btn-sm"><i class="bi bi-x"></i> X</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contact %}
+

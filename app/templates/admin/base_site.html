@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% block header %}
+    <h1 class="text-center">
+        <marquee behavior="scroll" direction="left">
+            {% if low_stock_products %}
+                {% for product in low_stock_products %}
+                  Sản phẩm {{ product }} gần hêt hãy bổ sung!! - 
+                {% endfor %}
+            {% else %}
+                Không có sản phẩm nào cần bổ sung
+            {% endif %}
+        </marquee>
+    </h1>
+    {{ block.super }}
+{% endblock header %}
+{% block branding %}
+    <div id="site-name">
+        <a href="/admin/">Quản lí trang web bán hàng điện tử</a>
+    </div>
+{% endblock branding %}
+{% block userlinks %}
+    {{ block.super }}
+    <!-- Thêm liên kết "Statistics" -->
+    <a href="{% url 'statistic' %}" class="headerlink" target="_blank">Statistics</a>
+{% endblock %}

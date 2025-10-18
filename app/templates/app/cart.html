@@ -1,0 +1,49 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block cart_content %}
+<div class="row" style="width:100%">
+	<div class="col-lg-12">
+		<br>
+		<div class="text-center p-3 bg-info bg-opacity-10 border border-info border-start-0 border-end-0">
+      <h3><strong>ĐƠN HÀNG</strong></h3>
+    </div>
+		<div class="box-element">
+			<a  class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Tiếp tục mua hàng</a>
+      <br><br>
+			<table class="table">
+				<tr>
+					<th><h5>Items:<strong> {{order.get_cart_items}}</strong></h5></th>
+					<th><h5>Total:<strong> {{order.get_cart_total}}</strong></h5></th>
+					<th>
+						<a  style="float:right; margin:5px;" class="btn btn-outline-dark" href="{% url 'checkout' %}">Thanh toán</a>
+					</th>
+				</tr>
+			</table>
+		</div>
+    <div class="box-element">
+      {% for item in items %}
+			<table class="table text-center">
+				<tr>
+          <th rowspan="2" class="col-1"><img src="{{item.product.ImageURL}}" width="100px" height="100px"></th>
+					<th class="col-5">Items</th>
+					<th class="col-2">Price</th>
+					<th class="col-1">Quantity</th>
+					<th class="col-1"></th>
+          <th class="col-2">Total</th>
+				</tr>
+        <tr>
+          <td class="col-5">{{item.product.name}}</td>
+          <td class="col-2">{{item.product.price}}</td>
+          <td class="col-1">{{item.quantity}}</td>
+					<td class="col-1">
+						<button data-product={{item.product.id}} data-action="add" class="btn-outline-dark btn add-btn update-cart">+</button>
+						<button data-product={{item.product.id}} data-action="remove" class="btn btn-outline-dark add-button update-cart">&#8722;</button>
+					</td>
+          <td class="col-2">{{item.get_total}}</td>
+        </tr>
+			</table>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock cart_content %}

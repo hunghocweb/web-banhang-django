@@ -1,0 +1,48 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load form_tags %}
+{% block login_page %}
+<section class="gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-lg-9 col-xl-7">
+        <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
+          <div class="card-body p-4 p-md-5">
+            <h2 class="text-uppercase text-center mb-5">Login</h2>
+            <form method="POST" action="">
+              {% csrf_token %}
+                <div class="col-mb-6">
+                  <!--User Name-->
+                  <div data-mdb-input-init class="form-outline">
+                    <label class="form-label" for="form3Example1c">User Name</label>
+                    <input type="text" name="username" id="form3Example1c" class="form-control p-3" />
+                  </div>
+                </div>
+                <div class="col-mb-6 pb-2">
+                  <!--Password-->
+                  <div data-mdb-input-init class="form-outline">
+                    <label class="form-label" for="form3Example1c">Password</label>
+                    <div class="input-group appear-password">
+                      <input type="password" name="password" id="password-input" class="form-control p-3 border-end-0" />
+                      <button class="border border-start-0 rounded-end bg-white p-3" type="button" id="toggle-password">
+                        <i class="bi bi-eye-slash" id="toggle-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% for message in messages %}
+              <p id="message" class="text-center text-danger fst-italic">{{message}}</p>
+              {% endfor %}
+              <div class="d-flex justify-content-center">
+                <input data-mdb-ripple-init class="btn btn-primary btn-lg" type="submit" value="Sign in" />
+              </div>   
+              <p class="text-center h6 fw-bold mb-5 mx-1 mx-md-4 mt-4">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="{% static 'app/js/appear_password.js' %}"></script>
+{% endblock login_page %}
