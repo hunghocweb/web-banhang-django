@@ -1,68 +1,121 @@
-# 👑 Django Web Project — by Hung
+# 🏰 WEB BÁN HÀNG ĐIỆN TỬ (DJANGO PROJECT)
 
-Xin chào, đây là project web được xây dựng bằng **Django Framework (Python)**.  
-Mục tiêu của dự án: Xây dựng Website bán hàng tích hợp content-based filtering và collaborative-filtering để gợi ý
-sản phẩm dựa vào tương tác của người dùng và các đánh giá từ sản phẩm đồng thời tích hợp api của gemini để xây dựng 
-chatbot tương tác với người dùng
-
-
-## 🌟 Tính năng chính
-
-- 🧭 Trang chủ hiển thị sản phẩm
-- 🛍️ Xem chi tiết sản phẩm
-- ❤️ Gợi ý sản phẩm tương tự (recommend system)
-- 👤 Đăng nhập / Đăng ký người dùng
-- 🧩 Quản trị dữ liệu qua Django Admin
-- 📊 Module `recommend.py` hỗ trợ gợi ý thông minh dựa trên hành vi người dùng
-- 🖼️ Quản lý static và template đầy đủ
+## 🧭 Giới thiệu
+Dự án Web Bán Hàng Điện Tử được xây dựng bằng Django – một framework mạnh mẽ của Python.  
+Website có các chức năng cơ bản của một hệ thống thương mại điện tử:  
+- Quản lý sản phẩm, danh mục  
+- Giỏ hàng, thanh toán  
+- Đăng nhập / đăng ký người dùng  
+- Hệ thống gợi ý sản phẩm bằng AI (Recommendation System)
+- Tích hợp API gemini để gợi ý sản phẩm cho người dùng thông qua chatbot
 
 ---
 
-## ⚙️ Cấu trúc thư mục dự án
-
+## ⚙️ Cấu trúc thư mục chính
+```
 WEBBANHANGDIENTU/
 │
-├── app/ # Ứng dụng chính
-│ ├── migrations/
-│ ├── static/ # CSS, JS, images...
-│ ├── templates/ # Giao diện HTML
-│ ├── templatetags/ # Custom template tags
-│ ├── admin.py
-│ ├── apps.py
-│ ├── models.py
-│ ├── recommend.py # Hệ thống gợi ý
-│ ├── tests.py
-│ ├── urls.py
-│ ├── utils.py
-│ └── views.py
+├── app/                       # Ứng dụng chính
+│   ├── migrations/            # Lưu thay đổi database
+│   ├── static/                # File CSS, JS, hình ảnh
+│   ├── templates/             # Giao diện HTML
+│   ├── templatetags/          # Thẻ template tùy chỉnh
+│   ├── admin.py               # Cấu hình trang admin
+│   ├── apps.py                # Khai báo ứng dụng
+│   ├── models.py              # Định nghĩa các model
+│   ├── recommend.py           # File xử lý gợi ý sản phẩm (AI)
+│   ├── tests.py               # Unit test
+│   ├── urls.py                # Định tuyến URL
+│   ├── utils.py               # Hàm tiện ích
+│   └── views.py               # Xử lý logic hiển thị
 │
-├── webbanhangdientu/ # Cấu hình Django chính
-│ ├── init.py
-│ ├── asgi.py
-│ ├── settings.py
-│ ├── urls.py
-│ └── wsgi.py
+├── webbanhangdientu/          # Thư mục cấu hình Django gốc
+│   ├── settings.py            # Cấu hình toàn hệ thống
+│   ├── urls.py                # URL gốc
+│   ├── wsgi.py                # Chạy server thật (Deploy)
+│   ├── asgi.py                # Cấu hình async
+│   └── __init__.py
 │
-├── .env # File cấu hình môi trường (ẩn)
-├── .gitignore
-├── manage.py
-├── README.md
-└── requirements.txt
+├── manage.py                  # File chạy chính của Django
+├── .env                       # Biến môi trường (không public)
+├── .gitignore                 # File loại trừ khi push GitHub
+└── README.md                  # Tập tin hướng dẫn
+```
 
-## 🧩 Yêu cầu hệ thống
+---
 
-| Thành phần | Phiên bản |
-|-------------|------------|
-| Python | 3.10 – 3.12 |
-| Django | 5.x |
-| pip | Mới nhất |
-| Virtualenv | Khuyến khích sử dụng |
+## 🪄 Cài đặt & Chạy Dự án
 
-## 🚀 Cách cài đặt và chạy dự án
-
-### 1️⃣ Clone project
+### 1️⃣ Tạo môi trường ảo
 ```bash
-git clone https://github.com/<your-username>/WEBBANHANGDIENTU.git
-cd WEBBANHANGDIENTU
+python -m venv venv
+```
 
+### 2️⃣ Kích hoạt môi trường ảo
+- Windows
+  ```bash
+  venv\Scripts\activate
+  ```
+- macOS/Linux
+  ```bash
+  source venv/bin/activate
+  ```
 
+### 3️⃣ Cài đặt thư viện cần thiết
+```bash
+pip install -r requirements.txt
+```
+
+> Nếu chưa có `requirements.txt`, tạo nhanh bằng lệnh:
+> ```bash
+> pip freeze > requirements.txt
+> ```
+
+### 4️⃣ Cấu hình cơ sở dữ liệu
+Mở file `.env` (nếu có) hoặc `settings.py`, chỉnh lại phần:
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+> Nếu dùng MySQL / PostgreSQL thì cập nhật thông tin tương ứng.
+
+### 5️⃣ Chạy migrate database
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 6️⃣ Tạo tài khoản admin
+```bash
+python manage.py createsuperuser
+```
+
+### 7️⃣ Chạy server
+```bash
+python manage.py runserver
+```
+
+Truy cập tại: 👉 http://127.0.0.1:8000/
+
+---
+
+## 🧑‍💻 Liên hệ & Ghi chú
+- Tác giả: Hung dep trai 💎  
+- Framework: Django  
+- Ngôn ngữ: Python  
+
+---
+
+## Tạo thêm file .env gồm
+
+SECRET_KEY=django-insecure-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+SENDER_EMAIL=name your email
+APP_PASSWORD=your email pass word
+### Để lấy secret key chạy dòng lệnh sau rồi thay vào xxxxxx
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
