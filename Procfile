@@ -1,1 +1,1 @@
-web: gunicorn WEBBANHANGDIENTU.wsgi
+web: gunicorn webbanhangdientu.wsgi
