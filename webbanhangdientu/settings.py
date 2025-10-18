@@ -22,16 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False)
 )
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-SECRET_KEY = env('SECRET_KEY',get_random_secret_key())
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+environ.Env.read_env(BASE_DIR / '.env')
+SECRET_KEY = env('SECRET_KEY',default=get_random_secret_key())
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.app',
+    'https://*.onrender.com',
 ]
 
 # Application definition
@@ -92,9 +93,10 @@ DATABASES = {
     #     'PASSWORD': '',
     #     'HOST': 'localhost',
     # }
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600
+    'default': dj_database_url.parse(
+        env('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True   # Render Postgres bắt SSL
     )
 }
 
