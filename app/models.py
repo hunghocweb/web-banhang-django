@@ -37,14 +37,15 @@ class Product(models.Model):
     def __str__(self):
         return self.name or "Unnamed Product"
 
+    def image_url(self):
+      try:
+          return self.image.url
+      except:
+          return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'
+        
     def ImageURL(self):
-        """Giữ nguyên hàm cũ, tự động lấy URL Cloudinary."""
-        try:
-            return self.image.url
-        except:
-            # fallback nếu chưa có ảnh hoặc ảnh lỗi
-            return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'
-
+      return self.image_url
+    
     def average_rating(self):
         ratings = self.ratings.all()
         if ratings.exists():
