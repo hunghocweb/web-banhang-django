@@ -36,7 +36,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name or "Unnamed Product"
-
+      
+    @property
     def image_url(self):
       try:
           return self.image.url
