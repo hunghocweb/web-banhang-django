@@ -120,3 +120,4 @@ APP_PASSWORD=your email pass word
 GEMINI_API_KEY=your gemini api key
 ### Để lấy secret key chạy dòng lệnh sau rồi thay vào xxxxxx
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+

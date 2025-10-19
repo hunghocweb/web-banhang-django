@@ -46,7 +46,7 @@ class Product(models.Model):
         """
         if self.image and hasattr(self.image, 'url'):
             return self.image.url
-        return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'  # link ảnh mặc định (Bệ hạ có thể thay)
+        return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'  
 
     def average_rating(self):
         ratings = self.ratings.all()

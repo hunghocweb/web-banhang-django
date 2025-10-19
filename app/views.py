@@ -383,7 +383,7 @@ def checkout(request):
     # lên lịch gửi email
     scheduler = BackgroundScheduler()
     # thời gian gửi 
-    run_date = datetime.now() + timedelta(seconds=0) # 1 phút
+    run_date = datetime.now() + timedelta(seconds=0) 
     scheduler.add_job(send_email, 'date', run_date=run_date, args=[customer.email, id_item])
     scheduler.start()
     order.save()
