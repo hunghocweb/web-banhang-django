@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.db.models import Avg
-
+from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -27,7 +27,7 @@ class Product(models.Model):
     price = models.FloatField(default=0)
     price_origin = models.FloatField(default=0)
     detail = models.CharField(max_length=1000, null=True)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    image = CloudinaryField('image', blank=True, null=True)
     inventory_quantity = models.IntegerField(default=0, null=True, blank=True)
     purchased_quantity = models.IntegerField(default=0)
 
