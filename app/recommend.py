@@ -7,7 +7,7 @@ class ContentBasedFiltering:
   def __init__(self, product_queryset):
     self.products = product_queryset
     self.df_product = pd.DataFrame(list(self.products.values()))
-    self.df_product['ImageURL'] = [product.ImageURL() for product in self.products]
+    self.df_product['ImageURL'] = [product.ImageURL for product in self.products]
     self.df_product['combineFeatures'] = self.df_product.apply(self.combine_features, axis=1)
 
   def combine_features(self, row):
