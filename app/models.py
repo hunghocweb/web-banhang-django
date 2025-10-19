@@ -20,35 +20,36 @@ class CreateUserForm(UserCreationForm):
   class Meta:
     model = User
     fields = ['username','email','first_name','last_name','password1','password2']
-  
 class Product(models.Model):
-  category = models.ManyToManyField(Categorie,related_name='product')
-  name = models.CharField(max_length=200,null=True)
-  price = models.FloatField(default=0)
-  price_origin = models.FloatField(default=0)
-  detail = models.CharField(max_length=1000,null=True)
-  image = models.ImageField(null=True,blank=True)
-  inventory_quantity = models.IntegerField(default = 0,null=True,blank=True)
-  purchased_quantity = models.IntegerField(default = 0) 
-  @property
-  def remaining_quantity(self):
-    return (self.inventory_quantity - self.purchased_quantity)
-  def __str__(self):
-    return self.name
+    category = models.ManyToManyField('Categorie', related_name='product')
+    name = models.CharField(max_length=200, null=True)
+    price = models.FloatField(default=0)
+    price_origin = models.FloatField(default=0)
+    detail = models.CharField(max_length=1000, null=True)
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
+    inventory_quantity = models.IntegerField(default=0, null=True, blank=True)
+    purchased_quantity = models.IntegerField(default=0)
 
-  def ImageURL(self):
-    try:
-      url = self.image.url
-    except:
-      url = ''
-    return url
-  
-  def average_rating(self):
-    ratings = self.ratings.all()
-    if ratings.exists():
-      return ratings.aggregate(Avg('rating'))['rating__avg']
-    return 0
-  
+    @property
+    def remaining_quantity(self):
+        return (self.inventory_quantity or 0) - (self.purchased_quantity or 0)
+
+    def __str__(self):
+        return self.name or "Unnamed Product"
+
+    def ImageURL(self):
+        """Giữ nguyên hàm cũ, tự động lấy URL Cloudinary."""
+        try:
+            return self.image.url
+        except:
+            # fallback nếu chưa có ảnh hoặc ảnh lỗi
+            return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'
+
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings.exists():
+            return round(ratings.aggregate(Avg('rating'))['rating__avg'], 1)
+        return 0.0
 class Order(models.Model):
   customer = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
   date_order = models.DateField(auto_now_add=True)
