@@ -343,55 +343,48 @@ def cart(request):
   return render(request,'app/cart.html', context)
 
 def checkout(request):
-    if request.user.is_authenticated:
-        customer = request.user
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all()
-        id_item = [item.product.id for item in items]
-        cartItems = order.get_cart_items
-    else:
-        items = []
-        order = {'get_cart_total': 0, 'get_cart_items': 0}
-        cartItems = order['get_cart_items']
-    categories = Categorie.objects.filter(is_sub=False)
-    context = {'items': items, 'order': order, 'cartItems': cartItems, 'categories': categories}
+  if request.user.is_authenticated:
+    customer = request.user
+    order, created = Order.objects.get_or_create(customer = customer,complete=False)
+    items = order.orderitem_set.all()
+    id_item = [item.product.id for item in items]
+    cartItems = order.get_cart_items
+  else:
+    items = []
+    order = {'get_cart_total':0,'get_cart_items':0}
+    cartItems = order['get_cart_items']
+  categories = Categorie.objects.filter(is_sub = False)
+  context= {'items':items,'order':order,'cartItems':cartItems,'categories': categories}
+  # thanhtoan
+  if request.method == "POST":
+    name = request.POST.get("name", "").strip()
+    address = request.POST.get("address", "").strip()
+    try:
+        mobile = int(request.POST.get("mobile", "").strip())
+    except ValueError:
+        context['error'] = "Số điện thoại không hợp lệ. Vui lòng nhập một số hợp lệ."
+        return render(request, 'app/checkout.html', context)
+    identify = request.POST.get("identify", "").strip()
 
-    if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        address = request.POST.get("address", "").strip()
-        try:
-            mobile = int(request.POST.get("mobile", "").strip())
-        except ValueError:
-            context['error'] = "Số điện thoại không hợp lệ. Vui lòng nhập một số hợp lệ."
-            return render(request, 'app/checkout.html', context)
-        identify = request.POST.get("identify", "").strip()
-
-        # Kiểm tra nếu bất kỳ trường nào bị bỏ trống
-        if not name or not address or not mobile or not identify:
-            context['error'] = "Vui lòng điền đầy đủ thông tin trước khi thanh toán!"
-            return render(request, 'app/checkout.html', context)
-        if mobile < 0 or mobile >= 1000000000000:
-            context['error'] = "Sai số điện thoại"
-            return render(request, 'app/checkout.html', context)
-
-        # Lưu order
-        order.name = name
-        order.address = address
-        order.numberphone = mobile
-        order.transaction_id = identify
-        order.complete = True
-        order.save()  # lưu trước khi gửi email
-
-        # Gửi email ngay lập tức
-        send_email(customer.email, id_item)
-
-        response = '''<script type="text/javascript">
-                        alert("Thông tin thanh toán đã được xử lý thành công!");
-                        window.location.href = '/checkout/';
-                      </script>'''
-        return HttpResponse(response)
-
-    return render(request, 'app/checkout.html', context)
+    # Kiểm tra nếu bất kỳ trường nào bị bỏ trống
+    if not name or not address or not mobile or not identify:
+      context['error'] = "Vui lòng điền đầy đủ thông tin trước khi thanh toán!"
+      return render(request, 'app/checkout.html', context)
+    if mobile<0 or mobile>=1000000000000:
+      context['error'] = "Sai số điện thoại"
+      return render(request, 'app/checkout.html', context)
+    # Thực hiện lưu vào cơ sở dữ liệu hoặc xử lý thêm
+    # ...
+    order.name = name
+    order.address = address
+    order.numberphone = mobile
+    order.transaction_id = identify
+    order.complete =True
+    send_email(customer.email, id_item)
+    order.save()
+    response =  '''<script type="text/javascript">alert("Thông tin thanh toán đã được xử lý thành công!");window.location.href = '/checkout/';</script>'''
+    return HttpResponse(response)
+  return render(request,'app/checkout.html', context)
 
 def updateItem(request):
   data = json.loads(request.body)

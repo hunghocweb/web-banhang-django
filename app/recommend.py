@@ -17,7 +17,7 @@ class ContentBasedFiltering:
     tf = TfidfVectorizer()
     tf_matrix = tf.fit_transform(self.df_product['combineFeatures'])
     similar = cosine_similarity(tf_matrix)
-    similar_products = list(enumerate(similar[product_id - 1]))
+    similar_products = list(enumerate(similar[product_id]))
     sorted_similar_products = sorted(similar_products, key=lambda x: x[1], reverse=True)
 
     recommendations = []
