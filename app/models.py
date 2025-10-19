@@ -20,6 +20,7 @@ class CreateUserForm(UserCreationForm):
   class Meta:
     model = User
     fields = ['username','email','first_name','last_name','password1','password2']
+  
 class Product(models.Model):
     category = models.ManyToManyField('Categorie', related_name='product')
     name = models.CharField(max_length=200, null=True)
@@ -36,22 +37,23 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name or "Unnamed Product"
-      
+
     @property
-    def image_url(self):
-      try:
-          return self.image.url
-      except:
-          return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'
-        
     def ImageURL(self):
-      return self.image_url
-    
+        """
+        Trả về URL của ảnh, tự động fallback về ảnh mặc định nếu chưa có ảnh.
+        Dùng được cho Cloudinary và local.
+        """
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        return 'https://res.cloudinary.com/demo/image/upload/v1690000000/default_product.png'  # link ảnh mặc định (Bệ hạ có thể thay)
+
     def average_rating(self):
         ratings = self.ratings.all()
         if ratings.exists():
             return round(ratings.aggregate(Avg('rating'))['rating__avg'], 1)
         return 0.0
+  
 class Order(models.Model):
   customer = models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
   date_order = models.DateField(auto_now_add=True)
