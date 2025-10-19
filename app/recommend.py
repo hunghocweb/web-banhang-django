@@ -4,33 +4,42 @@ import pandas as pd
 from .models import *
 
 class ContentBasedFiltering:
-  def __init__(self, product_queryset):
-    self.products = product_queryset
-    self.df_product = pd.DataFrame(list(self.products.values()))
-    self.df_product['ImageURL'] = [product.ImageURL for product in self.products]
-    self.df_product['combineFeatures'] = self.df_product.apply(self.combine_features, axis=1)
+    def __init__(self, product_queryset):
+        self.products = product_queryset
+        self.df_product = pd.DataFrame(list(self.products.values()))
+        self.df_product['ImageURL'] = [product.ImageURL for product in self.products]
+        self.df_product['combineFeatures'] = self.df_product.apply(self.combine_features, axis=1)
 
-  def combine_features(self, row):
-    return str(row['detail'])
+        # Mapping product_id -> index
+        self.id_to_index = {pid: idx for idx, pid in enumerate(self.df_product['id'])}
 
-  def get_recommendations(self, product_id, num_recommendations=5):
-    tf = TfidfVectorizer()
-    tf_matrix = tf.fit_transform(self.df_product['combineFeatures'])
-    similar = cosine_similarity(tf_matrix)
-    similar_products = list(enumerate(similar[product_id - 1]))
-    sorted_similar_products = sorted(similar_products, key=lambda x: x[1], reverse=True)
+    def combine_features(self, row):
+        return str(row['detail'])
 
-    recommendations = []
-    for i in range(1, min(num_recommendations + 1, len(sorted_similar_products))):
-      product_dict = {
-        'id': int(self.df_product.iloc[sorted_similar_products[i][0]]['id']),
-        'name': str(self.df_product.iloc[sorted_similar_products[i][0]]['name']),
-        'ImageURL': str(self.df_product.iloc[sorted_similar_products[i][0]]['ImageURL']),
-        'price': float(self.df_product.iloc[sorted_similar_products[i][0]]['price']),
-      }
-      recommendations.append(product_dict)
+    def get_recommendations(self, product_id, num_recommendations=5):
+        if product_id not in self.id_to_index:
+            return []  # ID không tồn tại
+        product_index = self.id_to_index[product_id]
 
-    return recommendations
+        tf = TfidfVectorizer()
+        tf_matrix = tf.fit_transform(self.df_product['combineFeatures'])
+        similar = cosine_similarity(tf_matrix)
+        similar_products = list(enumerate(similar[product_index]))
+        sorted_similar_products = sorted(similar_products, key=lambda x: x[1], reverse=True)
+
+        recommendations = []
+        for i in range(1, min(num_recommendations + 1, len(sorted_similar_products))):
+            idx = sorted_similar_products[i][0]
+            product_dict = {
+                'id': int(self.df_product.iloc[idx]['id']),
+                'name': str(self.df_product.iloc[idx]['name']),
+                'ImageURL': str(self.df_product.iloc[idx]['ImageURL']),
+                'price': float(self.df_product.iloc[idx]['price']),
+            }
+            recommendations.append(product_dict)
+
+        return recommendations
+
 
 def CollaborativeFiltering(userId):
   """
