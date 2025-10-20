@@ -1,5 +1,5 @@
 # 🏰 WEB BÁN HÀNG ĐIỆN TỬ (DJANGO PROJECT)
-
+Truy cập tại: 👉 https://web-banhang-django.onrender.com
 ## 🧭 Giới thiệu
 Dự án Web Bán Hàng Điện Tử được xây dựng bằng Django – một framework mạnh mẽ của Python.  
 Website có các chức năng cơ bản của một hệ thống thương mại điện tử:  
@@ -118,6 +118,10 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 SENDER_EMAIL=name your email
 APP_PASSWORD=your email pass word
 GEMINI_API_KEY=your gemini api key
+-- 3 cái này phải tạo tài khoản cloudinary(cái này để lưu ảnh upload lên cloud) để lấy--
+CLOUDINARY_CLOUD_NAME=xxxx
+CLOUDINARY_API_KEY=xxxxx
+CLOUDINARY_API_SECRET=xxxxx
 ### Để lấy secret key chạy dòng lệnh sau rồi thay vào xxxxxx
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 

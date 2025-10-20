@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-import threading
+# import threading
 import requests
 import google.generativeai as genai
 from django.shortcuts import render, redirect, get_object_or_404
@@ -381,7 +381,7 @@ def checkout(request):
     order.numberphone = mobile
     order.transaction_id = identify
     order.complete =True
-    threading.Thread(target=send_email, args=(customer.email, id_item)).start()
+    # threading.Thread(target=send_email, args=(customer.email, id_item)).start()
     order.save()
     response =  '''<script type="text/javascript">alert("Thông tin thanh toán đã được xử lý thành công!");window.location.href = '/checkout/';</script>'''
     return HttpResponse(response)
