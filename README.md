@@ -1,5 +1,6 @@
 # 🏰 WEB BÁN HÀNG ĐIỆN TỬ (DJANGO PROJECT)
 Truy cập tại: 👉 https://web-banhang-django.onrender.com
+<img width="1317" height="686" alt="image" src="https://github.com/user-attachments/assets/ff3dfd53-fabb-4273-a074-3d964f729df0" />
 ## 🧭 Giới thiệu
 Dự án Web Bán Hàng Điện Tử được xây dựng bằng Django – một framework mạnh mẽ của Python.  
 Website có các chức năng cơ bản của một hệ thống thương mại điện tử:  
