@@ -101,7 +101,7 @@ def update_purchased_quantity_on_orderitem_save(sender, instance, **kwargs):
     
        
 class Banner(models.Model):
-  image = models.ImageField(null=True,blank=True)
+  image = CloudinaryField('image', blank=True, null=True)
   name = models.CharField(max_length=50,null=True,blank=True)
   detail = models.CharField(max_length=50,null=True,blank=True)
   @property
